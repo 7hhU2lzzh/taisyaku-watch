@@ -2,7 +2,8 @@
 """
 taisyaku.jp PDF監視・処理スクリプト
 """
-import os, io, re, json, ftplib, smtplib, httpx, jpholiday
+import os, io, re, json, ftplib, smtplib, httpx
+import japanese_holiday as jpholiday
 from datetime import datetime, timezone, timedelta
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
