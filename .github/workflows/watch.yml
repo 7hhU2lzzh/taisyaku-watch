@@ -1,11 +1,13 @@
 name: Taisyaku PDF Processor
 
 on:
+  schedule:
+    - cron: "*/10 23-11 * * 0-4"
   workflow_dispatch:
     inputs:
       pdf_urls:
         description: 'カンマ区切りのPDF URL'
-        required: true
+        required: false
 
 jobs:
   process:
@@ -13,6 +15,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - uses: actions/setup-python@v5
         with:
@@ -21,7 +25,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get install -y poppler-utils
-          pip install httpx pdfplumber pdf2image pillow anthropic japanese-holiday
+          pip install httpx pdfplumber pdf2image pillow anthropic
 
       - name: Process PDFs
         env:
@@ -32,6 +36,6 @@ jobs:
           FTP_HOST:          ${{ secrets.FTP_HOST }}
           FTP_USER:          ${{ secrets.FTP_USER }}
           FTP_PASS:          ${{ secrets.FTP_PASS }}
-          FTP_PATH:          ${{ secrets.FTP_PATH }}
+          FTP_REMOTE_PATH:   ${{ secrets.FTP_REMOTE_PATH }}
           PDF_URLS:          ${{ github.event.inputs.pdf_urls }}
-        run: python scripts/process_pdf.py
+        run: python scri
