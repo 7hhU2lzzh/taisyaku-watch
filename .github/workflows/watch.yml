@@ -1,8 +1,8 @@
 name: Taisyaku PDF Processor
 on:
   schedule:
-    - cron: "*/10 23 * * 0-4"
-    - cron: "*/10 0-11 * * 0-4"
+    - cron: "0,30 2 * * 1-5"       # JST 11:00, 11:30
+    - cron: "0,30 7-8 * * 1-5"     # JST 16:00, 16:30, 17:00, 17:30
   workflow_dispatch:
     inputs:
       pdf_urls:
@@ -20,9 +20,22 @@ jobs:
           python-version: "3.12"
       - name: Install dependencies
         run: |
+          sudo apt-get update
           sudo apt-get install -y poppler-utils
-          pip install httpx pdfplumber pdf2image pillow anthropic
+          pip install httpx pdfplumber pdf2image pillow anthropic jpholiday
+      - name: Skip on Japanese holidays
+        id: holiday_check
+        run: |
+          python -c "
+          import datetime, jpholiday, sys
+          today = datetime.datetime.utcnow() + datetime.timedelta(hours=9)
+          if jpholiday.is_holiday(today.date()):
+              print('skip=true')
+              sys.exit(0)
+          print('skip=false')
+          " >> $GITHUB_OUTPUT
       - name: Process PDFs
+        if: steps.holiday_check.outputs.skip != 'true'
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           NOTIFY_EMAIL:      ${{ secrets.NOTIFY_EMAIL }}
