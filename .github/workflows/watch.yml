@@ -33,4 +33,4 @@ jobs:
           FTP_PASS:          ${{ secrets.FTP_PASS }}
           FTP_REMOTE_PATH:   ${{ secrets.FTP_REMOTE_PATH }}
           PDF_URLS:          ${{ github.event.inputs.pdf_urls }}
-        run: python scri
+        run: python scripts/process_pdf.py
